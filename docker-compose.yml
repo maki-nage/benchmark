@@ -27,10 +27,17 @@ services:
           - ./dataset.txt:/tmp/dataset.txt:ro
           - ./inject_dataset.sh:/tmp/inject_dataset.sh:ro
 
-    consul:
-      image: consul:1.7
-      ports:
-        - "8500:8500"
+    kafka-rest-proxy:
+        image: confluentinc/cp-kafka-rest
+        depends_on:
+          - kafka
+        environment:
+          KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_REST_LISTENERS: http://kafka-rest-proxy:8082
+          KAFKA_REST_HOST_NAME: kafka-rest-proxy
+          KAFKA_REST_BOOTSTRAP_SERVERS: kafka:29092
+        ports:
+          - "0.0.0.0:8082:8082"
 
     makinage-benchmark:
         image: makinage-benchmark:latest
