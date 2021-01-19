@@ -1,0 +1,17 @@
+application:
+    name: makinage_benchmark
+kafka:
+    endpoint: "kafka:29092"
+topics:
+    - name: bench1_feature
+      encoder: makinage_benchmark.bench
+      start_from: beginning
+    - name: bench1_makinage
+      encoder: makinage_benchmark.bench
+operators:
+    compute_hourly_mean:
+        factory: makinage_benchmark:compute_hourly_mean
+        sources:
+            - bench1_feature
+        sinks:
+            - bench1_makinage
