@@ -31,7 +31,7 @@ def create_feature_generator(item_count, group_count):
 
 
 def main():
-    gen = create_feature_generator(1000000, 10000)
+    gen = create_feature_generator(10000000, 100000)
     with open('dataset.txt', 'w') as fd:
         for utterance in gen:
             fd.write("{},{}\n".format(
