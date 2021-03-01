@@ -23,7 +23,10 @@ def compute_total_lag(stats):
     total_lag = 0
     for line in stats:
         line = line.split()
-        total_lag += int(line[5])
+        if line[5] == '-':
+            total_lag = -1
+        else :
+            total_lag += int(line[5])
 
     return total_lag
 
@@ -52,7 +55,11 @@ def main(argv):
         time.sleep(10.0)
         stats = consumer_groups(group_id)
         total_lag = compute_total_lag(stats)
-        if total_lag == 0:
+
+        if total_lag == -1:
+            # not ready yet
+            continue
+        elif total_lag == 0:
             break
 
         if step >= 2:
