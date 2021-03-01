@@ -13,7 +13,7 @@ python3 monitor.py -g makinage_benchmark
 docker-compose stop makinage-benchmark
 
 echo "running python-bench1 with 5 nodes..."
-docker-compose up --scale makinage-benchmark=5 -d
+docker-compose up --scale makinage-benchmark=5 -d makinage-benchmark
 python3 monitor.py -g makinage_benchmark
 docker-compose stop makinage-benchmark
 
