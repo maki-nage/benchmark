@@ -39,8 +39,40 @@ services:
         ports:
           - "0.0.0.0:8082:8082"
 
+    kafka-create-topics:
+        image: confluentinc/cp-kafka:5.4.0
+        depends_on:
+          - kafka
+        command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                           cub kafka-ready -b kafka:29092 1 20 && \
+                           kafka-topics --create --topic bench1_feature --if-not-exists --zookeeper zookeeper:2181 --partitions 37 --replication-factor 1 && \
+                           kafka-topics --create --topic bench1_makinage --if-not-exists --zookeeper zookeeper:2181 --partitions 37 --replication-factor 1 && \
+                           kafka-topics --create --topic bench1_kafka_dsl --if-not-exists --zookeeper zookeeper:2181 --partitions 37 --replication-factor 1 && \
+                           sleep infinity'"
+        environment:
+          KAFKA_BROKER_ID: ignored
+          KAFKA_ZOOKEEPER_CONNECT: ignored
+
     makinage-benchmark:
         image: makinage-benchmark:latest
         depends_on:
           - kafka
+          - kafka-create-topics
         command: makinage --config /opt/makinage/config.yaml
+
+    kafka-dsl-benchmark1:
+        image: kafka-dsl-benchmark1:latest
+        depends_on:
+          - kafka
+          - kafka-create-topics
+        environment:
+          APPLICATION_ID: kafka-dsl-benchmark1
+
+    kafka-dsl-benchmark1-scaled:
+        image: kafka-dsl-benchmark1:latest
+        depends_on:
+          - kafka
+          - kafka-create-topics
+        environment:
+          APPLICATION_ID: kafka-dsl-benchmark1-scaled
+
