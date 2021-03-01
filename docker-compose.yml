@@ -47,6 +47,7 @@ services:
                            cub kafka-ready -b kafka:29092 1 20 && \
                            kafka-topics --create --topic bench1_feature --if-not-exists --zookeeper zookeeper:2181 --partitions 37 --replication-factor 1 && \
                            kafka-topics --create --topic bench1_makinage --if-not-exists --zookeeper zookeeper:2181 --partitions 37 --replication-factor 1 && \
+                           kafka-topics --create --topic bench1_kafka_dsl --if-not-exists --zookeeper zookeeper:2181 --partitions 37 --replication-factor 1 && \
                            sleep infinity'"
         environment:
           KAFKA_BROKER_ID: ignored
@@ -58,3 +59,20 @@ services:
           - kafka
           - kafka-create-topics
         command: makinage --config /opt/makinage/config.yaml
+
+    kafka-dsl-benchmark1:
+        image: kafka-dsl-benchmark1:latest
+        depends_on:
+          - kafka
+          - kafka-create-topics
+        environment:
+          APPLICATION_ID: kafka-dsl-benchmark1
+
+    kafka-dsl-benchmark1-scaled:
+        image: kafka-dsl-benchmark1:latest
+        depends_on:
+          - kafka
+          - kafka-create-topics
+        environment:
+          APPLICATION_ID: kafka-dsl-benchmark1-scaled
+
