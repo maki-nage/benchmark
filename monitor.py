@@ -1,14 +1,17 @@
 import subprocess
 import time
 import statistics
+import sys
+import getopt
 
 
+def consumer_groups(group_id):
 def consumer_groups():
     res = subprocess.check_output(
-        "docker exec -it benchmark_kafka_1 "
-        "kafka-consumer-groups --describe "
-        "--group makinage_benchmark "
-        "--bootstrap-server localhost:9092 ",
+        "docker exec -it benchmark_kafka_1"
+        " kafka-consumer-groups --describe"
+        " --group " + group_id +
+        " --bootstrap-server localhost:9092 ",
         shell=True
     )
 
@@ -25,13 +28,29 @@ def compute_total_lag(stats):
     return total_lag
 
 
-def main():
+def main(argv):
     step = 0
     rps = []
     prev_total_lag = -1
+    group_id = ''
+
+    try:
+        opts, args = getopt.getopt(argv,"hg:",["groupid="])
+    except getopt.GetoptError:
+        print('monitor.py -g <groupid>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('monitor.py -g <groupid>')
+            sys.exit()
+        elif opt in ("-g", "--groupid"):
+            group_id = arg
+
+    print('Group id minitored: ' + group_id)
+
     while True:
         time.sleep(10.0)
-        stats = consumer_groups()
+        stats = consumer_groups(group_id)
         total_lag = compute_total_lag(stats)
         if total_lag == 0:
             break
@@ -49,4 +68,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
